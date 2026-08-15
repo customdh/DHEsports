@@ -1757,6 +1757,40 @@
       }
     }
 
+  
+    /* ===== SCHEDULE SESSION SPACING ===== */
+    .match-list {
+      gap: 18px;
+      background: transparent;
+      border: none;
+      overflow: visible;
+    }
+
+    .schedule-session {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.018), transparent),
+        var(--panel);
+      box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    }
+
+    .schedule-session:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    @media (max-width: 560px) {
+      .match-list {
+        gap: 14px;
+      }
+
+      .schedule-session {
+        padding: 18px 14px;
+        border-radius: 14px;
+      }
+    }
+
   </style>
 </head>
 
