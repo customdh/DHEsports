@@ -1652,6 +1652,111 @@
       box-shadow: 0 8px 24px rgba(255,45,61,.08);
     }
 
+  
+    /* ===== ENTRY FEE / PRIZE BADGES ===== */
+    .match-status-fee {
+      color: #ffd166;
+      border-color: rgba(255,209,102,.28);
+      background: rgba(255,209,102,.08);
+    }
+
+    .match-status-prize {
+      color: #63e6be;
+      border-color: rgba(99,230,190,.28);
+      background: rgba(99,230,190,.08);
+    }
+
+    .match-status-fee strong,
+    .match-status-prize strong {
+      color: inherit;
+      font-weight: 1000;
+    }
+
+  
+    /* ===== LOBBY FEE / PRIZE INFO ROW ===== */
+    .session-info-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 4px 0 18px;
+    }
+
+    .session-info-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 62px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.025), transparent),
+        rgba(255,255,255,.018);
+    }
+
+    .session-info-box small {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    .session-info-box strong {
+      display: block;
+      font-size: 17px;
+      font-weight: 1000;
+      line-height: 1.1;
+    }
+
+    .session-info-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 9px;
+      font-size: 16px;
+      font-weight: 1000;
+    }
+
+    .session-info-fee {
+      border-color: rgba(255,209,102,.18);
+    }
+
+    .session-info-fee .session-info-icon {
+      color: #ffd166;
+      background: rgba(255,209,102,.08);
+      border: 1px solid rgba(255,209,102,.18);
+    }
+
+    .session-info-fee strong {
+      color: #ffd166;
+    }
+
+    .session-info-prize {
+      border-color: rgba(99,230,190,.18);
+    }
+
+    .session-info-prize .session-info-icon {
+      color: #63e6be;
+      background: rgba(99,230,190,.08);
+      border: 1px solid rgba(99,230,190,.18);
+    }
+
+    .session-info-prize strong {
+      color: #63e6be;
+    }
+
+    @media (max-width: 560px) {
+      .session-info-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -1812,19 +1917,33 @@ window.DH_TOURNAMENT_DATA = {
     { id: "OMG", name: "Omega Crew",      shortName: "OMG" },
     { id: "APX", name: "Apex Hunters",    shortName: "APX" },
     
-    { id: "AEESP", name: "AE ESP",    shortName: "ESP" }
+    { id: "AEESP", name: "AE ESP",    shortName: "ESP" },
+    { id: "THDESP",   name: "THD ESP",    shortName: "THD" },
+    { id: "HDESP",   name: "HD ESP",    shortName: "HD" }
   ],
 
-  // Mỗi object = 1 lobby.
-  // Số lobby trong ngày và matchCount hoàn toàn tùy ý.
+  // ============================================================
+  // LỊCH THI ĐẤU
+  // Mỗi object = 1 lobby / 1 khung giờ thi đấu.
+  //
+  // Có thể chỉnh riêng cho từng lobby:
+  // - matchCount : số trận
+  // - entryFee   : lệ phí tham gia, ví dụ "FREE", "2K", "5K"
+  // - prizePool  : tổng giải thưởng, ví dụ "10K", "50K", "100K"
+  //
+  // Ví dụ:
+  // { date: "2026-08-15", lobbyId: "L2", time: "15:00",
+  //   matchCount: 4, status: "Sắp diễn ra",
+  //   entryFee: "2K", prizePool: "10K" }
+  // ============================================================
   schedule: [
-    //{ date: "2026-08-15", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Sắp diễn ra" },
-    { date: "2026-08-15", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Sắp diễn ra" },
-    { date: "2026-08-15", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Sắp diễn ra" }, //"Đã kết thúc"
+    //{ date: "2026-08-15", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Sắp diễn ra", entryFee: "FREE", prizePool: "10K" },
+    { date: "2026-08-15", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Sắp diễn ra", entryFee: "FREE", prizePool: "10K" },
+    { date: "2026-08-15", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Sắp diễn ra", entryFee: "FREE", prizePool: "10K" }, //"Đã kết thúc"
 
-    { date: "2026-08-16", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Chưa bắt đầu" },
-    { date: "2026-08-16", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Chưa bắt đầu" },
-    { date: "2026-08-16", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Chưa bắt đầu" }
+    { date: "2026-08-16", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Chưa bắt đầu", entryFee: "FREE", prizePool: "10K" },
+    { date: "2026-08-16", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Chưa bắt đầu", entryFee: "FREE", prizePool: "10K" },
+    { date: "2026-08-16", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Chưa bắt đầu", entryFee: "FREE", prizePool: "10K" }
   ],
 
   // Mỗi dòng = 1 đội tham gia 1 lobby.
@@ -1845,7 +1964,7 @@ window.DH_TOURNAMENT_DATA = {
 
     // 15/08 - 20:00
     { date: "2026-08-15", lobbyId: "L2", teamId: "AEESP" },
-    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "THDESP" },
     { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
     { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
     { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
@@ -1992,7 +2111,9 @@ window.DH_TOURNAMENT_DATA = {
         lobbyId: String(item.lobbyId || "").trim(),
         time: String(item.time || "").trim(),
         matchCount: Math.max(0, Number(item.matchCount) || 0),
-        status: String(item.status || "").trim()
+        status: String(item.status || "").trim(),
+        entryFee: String(item.entryFee ?? "").trim(),
+        prizePool: String(item.prizePool ?? "").trim()
       })).filter(item => item.date && item.lobbyId) : [];
 
       schedules.sort((a, b) =>
@@ -2129,6 +2250,28 @@ window.DH_TOURNAMENT_DATA = {
                 <span class="match-status">${sessionTeams.length} đội</span>
                 <span class="match-status">${games.length} trận</span>
               </div>
+            </div>
+
+            <div class="session-info-row">
+              ${session.entryFee ? `
+                <div class="session-info-box session-info-fee">
+                  <div>
+                    <small>Lệ phí tham gia</small>
+                    <strong>${session.entryFee}</strong>
+                  </div>
+                  <div class="session-info-icon">₫</div>
+                </div>
+              ` : ""}
+
+              ${session.prizePool ? `
+                <div class="session-info-box session-info-prize">
+                  <div>
+                    <small>Tổng giải thưởng</small>
+                    <strong>${session.prizePool}</strong>
+                  </div>
+                  <div class="session-info-icon">★</div>
+                </div>
+              ` : ""}
             </div>
 
             <div class="session-team-title">Đội tham gia lobby</div>
