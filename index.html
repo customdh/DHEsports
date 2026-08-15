@@ -1589,69 +1589,6 @@
     }
 
 
-    .local-excel-fallback {
-      margin-top: 10px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      border: 1px solid rgba(255,45,61,.18);
-      border-radius: 12px;
-      background:
-        linear-gradient(135deg, rgba(255,45,61,.065), transparent),
-        rgba(255,255,255,.018);
-    }
-
-    .local-excel-fallback[hidden] {
-      display: none !important;
-    }
-
-    .local-excel-fallback strong {
-      display: block;
-      margin-bottom: 5px;
-      color: #fff;
-      font-size: 13px;
-    }
-
-    .local-excel-fallback span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .excel-file-button {
-      flex: 0 0 auto;
-      margin: 0;
-      padding: 11px 15px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, #ff3545, #b90822);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: none;
-      letter-spacing: 0;
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    .excel-file-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(255,45,61,.18);
-    }
-
-    @media (max-width: 640px) {
-      .local-excel-fallback {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .excel-file-button {
-        text-align: center;
-      }
-    }
-
     footer {
       padding: 36px 0;
       margin-top: 30px;
@@ -1693,6 +1630,14 @@
         flex-direction: column;
       }
     }
+  
+    /* ===== HEADER LOGO FILE ===== */
+    .brand-badge { overflow: hidden; }
+    .brand-badge img { width:100%; height:100%; display:block; object-fit:cover; }
+    .brand-badge .brand-logo-fallback {
+      width:100%; height:100%; display:grid; place-items:center;
+    }
+
   </style>
 </head>
 
@@ -1700,7 +1645,11 @@
   <header>
     <div class="container nav">
       <div class="brand">
-        <div class="brand-badge">DH</div>
+        <div class="brand-badge">
+          <img id="brandLogo" src="icon.png" alt="DH Esports"
+               data-logo-index="0" onerror="tryNextBrandLogo(this)">
+          <span id="brandLogoFallback" class="brand-logo-fallback" style="display:none;">DH</span>
+        </div>
         <span>DH ESPORTS</span>
       </div>
 
@@ -1755,7 +1704,7 @@
               </div>
 
               <p>
-                Cập nhật thông tin giải đấu, giao lưu với các đội và nhận thông báo mới nhất.
+                Đăng kí giải đấu, giao lưu với các đội và nhận thông báo mới nhất.
               </p>
 
               <div class="facebook-card-button">
@@ -1770,27 +1719,19 @@
 
 
     <div class="container">
-      <div id="dataStatus" class="data-status">Đang đọc DH_Tournament.xlsx...</div>
-
-      <div id="localExcelFallback" class="local-excel-fallback" hidden>
-        <div>
-          <strong>Mở web trực tiếp từ máy</strong>
-          <span>Trình duyệt không cho phép tự đọc file Excel bên cạnh index.html khi dùng file://.</span>
-        </div>
-
-        <label class="excel-file-button" for="excelFileInput">
-          Chọn DH_Tournament.xlsx
-        </label>
-        <input id="excelFileInput" type="file" accept=".xlsx,.xls" hidden>
-      </div>
+      <div id="dataStatus" class="data-status">Đang tải dữ liệu giải đấu...</div>
     </div>
 
     <section id="honors">
       <div class="container">
         <div class="section-title">
           <div>
-            <h2>Vinh danh hôm nay</h2>
-            
+            <h2 id="honorsTitle">Vinh danh hôm nay</h2>
+          </div>
+
+          <div class="date-control">
+            <label for="tournamentDateSelect">Ngày thi đấu</label>
+            <select id="tournamentDateSelect"></select>
           </div>
         </div>
 
@@ -1802,8 +1743,7 @@
       <div class="container">
         <div class="section-title">
           <div>
-            <h2>Lịch thi đấu</h2>
-            
+            <h2 id="scheduleTitle">Lịch thi đấu</h2>
           </div>
         </div>
 
@@ -1815,12 +1755,183 @@
   <footer>
     © 2026 DH Esports • Free Fire Tournament
   </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
   <script>
-    const EXCEL_FILE = "./DH_Tournament.xlsx";
+/* ============================================================
+   DH ESPORTS - TOURNAMENT DATA
+   Sửa dữ liệu ở block này nếu dùng bản index.html standalone.
+   ============================================================ */
+// ============================================================
+// DH ESPORTS - TOURNAMENT DATA
+// Chỉ cần sửa dữ liệu trong file này.
+// Không cần sửa index.html.
+// ============================================================
 
+window.DH_TOURNAMENT_DATA = {
+  teams: [
+    { id: "NO",  name: "Đăng kí ngay!!!",   shortName: "NO" },
+    { id: "DH",  name: "DH Esports",      shortName: "DH" },
+    { id: "PHX", name: "Phoenix Force",   shortName: "PHX" },
+    { id: "NW",  name: "Night Wolves",    shortName: "NW" },
+    { id: "TTG", name: "Titan Gaming",    shortName: "TTG" },
+    { id: "RV",  name: "Royal Vipers",    shortName: "RV" },
+    { id: "ZG",  name: "Zero Gravity",    shortName: "ZG" },
+    { id: "SC",  name: "Shadow Core",     shortName: "SC" },
+    { id: "SKY", name: "Sky Hunters",     shortName: "SKY" },
+    { id: "DP",  name: "Dragon Pulse",    shortName: "DP" },
+    { id: "VTX", name: "Vortex Esports",  shortName: "VTX" },
+    { id: "RS",  name: "Red Storm",       shortName: "RS" },
+    { id: "NVL", name: "Nova Legion",     shortName: "NVL" },
+    { id: "ALP", name: "Alpha Squad",     shortName: "ALP" },
+    { id: "IF",  name: "Iron Fangs",      shortName: "IF" },
+    { id: "THX", name: "Thunder X",       shortName: "THX" },
+    { id: "BF",  name: "Blue Flame",      shortName: "BF" },
+    { id: "OMG", name: "Omega Crew",      shortName: "OMG" },
+    { id: "APX", name: "Apex Hunters",    shortName: "APX" }
+  ],
+
+  // Mỗi object = 1 lobby.
+  // Số lobby trong ngày và matchCount hoàn toàn tùy ý.
+  schedule: [
+    { date: "2026-08-15", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Sắp diễn ra" },
+    { date: "2026-08-15", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Chưa bắt đầu" },
+    { date: "2026-08-15", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Chưa bắt đầu" }, //"Đã kết thúc"
+
+    { date: "2026-08-16", lobbyId: "L1", time: "13:00", matchCount: 4, status: "Chưa bắt đầu" },
+    { date: "2026-08-16", lobbyId: "L2", time: "15:00", matchCount: 4, status: "Chưa bắt đầu" },
+    { date: "2026-08-16", lobbyId: "L3", time: "20:00", matchCount: 4, status: "Chưa bắt đầu" }
+  ],
+
+  // Mỗi dòng = 1 đội tham gia 1 lobby.
+  lobbyTeams: [
+    // 15/08 - 15:00
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L1", teamId: "NO" },
+
+    // 15/08 - 20:00
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L2", teamId: "NO" },
+
+    // 15/08 - 20:00
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+    { date: "2026-08-15", lobbyId: "L3", teamId: "NO" },
+
+
+
+    // 16/08 - 18:00
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L1", teamId: "NO" },
+
+    // 16/08 - 21:00
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+    { date: "2026-08-16", lobbyId: "L2", teamId: "NO" },
+
+    // 16/08 - 22:00
+    { date: "2026-08-16", lobbyId: "L3", teamId: "NW" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "TTG" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "RV" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "SC" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "SKY" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "RS" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "NVL" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "IF" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "THX" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "BF" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "OMG" },
+    { date: "2026-08-16", lobbyId: "L3", teamId: "APX" }
+  ],
+
+  // Tùy chọn.
+  // Nếu lobby không có dữ liệu ở đây, web tự sinh Trận 1..N theo matchCount.
+  matches: [
+    { date: "2026-08-15", lobbyId: "L1", matchNo: 1, map: "Bermuda - Đảo quân sự" },
+    { date: "2026-08-15", lobbyId: "L1", matchNo: 2, map: "Purgatory - Đảo thiên đường" },
+    { date: "2026-08-15", lobbyId: "L1", matchNo: 3, map: "Kalahari - Đảo sa mạc" },
+    { date: "2026-08-15", lobbyId: "L1", matchNo: 4, map: "NexTerra - Đảo thế kỉ" },
+
+    { date: "2026-08-15", lobbyId: "L2", matchNo: 1, map: "Bermuda - Đảo quân sự" },
+    { date: "2026-08-15", lobbyId: "L2", matchNo: 2, map: "Purgatory - Đảo thiên đường" },
+    { date: "2026-08-15", lobbyId: "L2", matchNo: 3, map: "Kalahari - Đảo sa mạc" },
+    { date: "2026-08-15", lobbyId: "L2", matchNo: 4, map: "NexTerra - Đảo thế kỉ" },
+ 
+    { date: "2026-08-15", lobbyId: "L3", matchNo: 1, map: "Bermuda - Đảo quân sự" },
+    { date: "2026-08-15", lobbyId: "L3", matchNo: 2, map: "Purgatory - Đảo thiên đường" },
+    { date: "2026-08-15", lobbyId: "L3", matchNo: 3, map: "Kalahari - Đảo sa mạc" },
+    { date: "2026-08-15", lobbyId: "L3", matchNo: 4, map: "NexTerra - Đảo thế kỉ" },
+  ],
+
+  // Vinh danh. Chỉ cần nhập Top 3.
+  results: [
+    { date: "2026-08-15", lobbyId: "L0", rank: 1, teamId: "DH",  points: 58, kills: 21, booyah: 2 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 2, teamId: "NW",  points: 51, kills: 19, booyah: 1 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 3, teamId: "PHX", points: 47, kills: 16, booyah: 1 },
+
+    { date: "2026-08-15", lobbyId: "L0", rank: 1, teamId: "TTG", points: 54, kills: 18, booyah: 2 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 2, teamId: "DH",  points: 49, kills: 17, booyah: 1 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 3, teamId: "SC",  points: 44, kills: 15, booyah: 1 },
+
+    { date: "2026-08-15", lobbyId: "L0", rank: 1, teamId: "TTG", points: 54, kills: 18, booyah: 2 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 2, teamId: "DH",  points: 49, kills: 17, booyah: 1 },
+    { date: "2026-08-15", lobbyId: "L0", rank: 3, teamId: "SC",  points: 44, kills: 15, booyah: 1 },
+
+    { date: "2026-08-16", lobbyId: "L0", rank: 1, teamId: "DH",  points: 58, kills: 21, booyah: 2 },
+    { date: "2026-08-16", lobbyId: "L0", rank: 2, teamId: "NW",  points: 51, kills: 19, booyah: 1 },
+    { date: "2026-08-16", lobbyId: "L0", rank: 3, teamId: "PHX", points: 47, kills: 16, booyah: 1 },
+  ]
+};
+
+</script>
+
+<script>
     let teams = [];
     let schedules = [];
     let lobbyTeams = [];
@@ -1837,55 +1948,36 @@
       "#f05da9"
     ];
 
-    function sheetRows(workbook, sheetName) {
-      const sheet = workbook.Sheets[sheetName];
-      if (!sheet) {
-        console.warn(`Không tìm thấy sheet: ${sheetName}`);
-        return [];
+    function normalizeTournamentData() {
+      const data = window.DH_TOURNAMENT_DATA;
+
+      if (!data) {
+        throw new Error("Không tìm thấy DH_TOURNAMENT_DATA trong index.html.");
       }
 
-      // Row 1 là title, row 2 là header.
-      return XLSX.utils.sheet_to_json(sheet, {
-        range: 1,
-        defval: "",
-        raw: true
-      });
-    }
+      teams = Array.isArray(data.teams) ? data.teams.map(team => ({
+        id: String(team.id || "").trim(),
+        name: String(team.name || team.id || "").trim(),
+        shortName: String(team.shortName || team.id || "").trim()
+      })).filter(team => team.id) : [];
 
-    function normalizeDate(value) {
-      if (!value && value !== 0) return "";
+      schedules = Array.isArray(data.schedule) ? data.schedule.map(item => ({
+        date: String(item.date || "").trim(),
+        lobbyId: String(item.lobbyId || "").trim(),
+        time: String(item.time || "").trim(),
+        matchCount: Math.max(0, Number(item.matchCount) || 0),
+        status: String(item.status || "").trim()
+      })).filter(item => item.date && item.lobbyId) : [];
 
-      if (value instanceof Date && !Number.isNaN(value.getTime())) {
-        const y = value.getFullYear();
-        const m = String(value.getMonth() + 1).padStart(2, "0");
-        const d = String(value.getDate()).padStart(2, "0");
-        return `${y}-${m}-${d}`;
-      }
+      schedules.sort((a, b) =>
+        a.date.localeCompare(b.date) ||
+        a.time.localeCompare(b.time) ||
+        a.lobbyId.localeCompare(b.lobbyId)
+      );
 
-      if (typeof value === "number") {
-        const parsed = XLSX.SSF.parse_date_code(value);
-        if (parsed) {
-          return `${parsed.y}-${String(parsed.m).padStart(2, "0")}-${String(parsed.d).padStart(2, "0")}`;
-        }
-      }
-
-      const text = String(value).trim();
-
-      if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
-        return text.slice(0, 10);
-      }
-
-      const vn = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (vn) {
-        return `${vn[3]}-${vn[2].padStart(2, "0")}-${vn[1].padStart(2, "0")}`;
-      }
-
-      const parsed = new Date(text);
-      if (!Number.isNaN(parsed.getTime())) {
-        return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
-      }
-
-      return text;
+      lobbyTeams = Array.isArray(data.lobbyTeams) ? data.lobbyTeams : [];
+      matchDetails = Array.isArray(data.matches) ? data.matches : [];
+      results = Array.isArray(data.results) ? data.results : [];
     }
 
     function formatDateVN(dateKey) {
@@ -1894,85 +1986,11 @@
       return `${day}/${month}/${year}`;
     }
 
-    function normalizeTime(value) {
-      if (value === "" || value === null || value === undefined) return "";
-
-      // Excel time stored as fraction of one day.
-      if (typeof value === "number" && value >= 0 && value < 1) {
-        const minutes = Math.round(value * 24 * 60);
-        const h = Math.floor(minutes / 60) % 24;
-        const m = minutes % 60;
-        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      }
-
-      const text = String(value).trim();
-      const hm = text.match(/(\d{1,2}):(\d{2})/);
-      if (hm) {
-        return `${hm[1].padStart(2, "0")}:${hm[2]}`;
-      }
-
-      return text;
-    }
-
-    function parseWorkbook(workbook) {
-      teams = sheetRows(workbook, "Teams")
-        .filter(row => row.TeamID)
-        .map(row => ({
-          id: String(row.TeamID).trim(),
-          name: String(row.TeamName || row.TeamID).trim(),
-          shortName: String(row.ShortName || row.TeamID).trim()
-        }));
-
-      schedules = sheetRows(workbook, "Schedule")
-        .filter(row => row.Date && row.LobbyID)
-        .map(row => ({
-          date: normalizeDate(row.Date),
-          lobbyId: String(row.LobbyID).trim(),
-          time: normalizeTime(row.Time),
-          matchCount: Math.max(0, Number(row.MatchCount) || 0),
-          status: String(row.Status || "").trim()
-        }))
-        .sort((a, b) =>
-          a.date.localeCompare(b.date) ||
-          a.time.localeCompare(b.time) ||
-          a.lobbyId.localeCompare(b.lobbyId)
-        );
-
-      lobbyTeams = sheetRows(workbook, "LobbyTeams")
-        .filter(row => row.Date && row.LobbyID && row.TeamID)
-        .map(row => ({
-          date: normalizeDate(row.Date),
-          lobbyId: String(row.LobbyID).trim(),
-          teamId: String(row.TeamID).trim()
-        }));
-
-      matchDetails = sheetRows(workbook, "Matches")
-        .filter(row => row.Date && row.LobbyID && row.MatchNo)
-        .map(row => ({
-          date: normalizeDate(row.Date),
-          lobbyId: String(row.LobbyID).trim(),
-          matchNo: Number(row.MatchNo) || 0,
-          map: String(row.Map || "").trim()
-        }));
-
-      results = sheetRows(workbook, "Results")
-        .filter(row => row.Date && row.LobbyID && row.Rank && row.TeamID)
-        .map(row => ({
-          date: normalizeDate(row.Date),
-          lobbyId: String(row.LobbyID).trim(),
-          rank: Number(row.Rank) || 0,
-          teamId: String(row.TeamID).trim(),
-          points: Number(row.Points) || 0,
-          kills: Number(row.Kills) || 0,
-          booyah: Number(row.Booyah) || 0
-        }));
-    }
-
     function getTeam(teamId) {
       return teams.find(team => team.id === teamId) ?? {
         id: teamId,
         name: teamId,
-        shortName: teamId.slice(0, 4)
+        shortName: String(teamId).slice(0, 4)
       };
     }
 
@@ -1989,16 +2007,15 @@
     function getLobbyGames(session) {
       const explicitGames = matchDetails
         .filter(item => item.date === session.date && item.lobbyId === session.lobbyId)
+        .map(item => ({
+          matchNo: Number(item.matchNo) || 0,
+          map: String(item.map || "").trim()
+        }))
         .sort((a, b) => a.matchNo - b.matchNo);
 
-      if (explicitGames.length > 0) {
-        return explicitGames;
-      }
+      if (explicitGames.length > 0) return explicitGames;
 
-      // Không có chi tiết trong Matches -> tự sinh theo Schedule.MatchCount.
       return Array.from({ length: session.matchCount }, (_, index) => ({
-        date: session.date,
-        lobbyId: session.lobbyId,
         matchNo: index + 1,
         map: ""
       }));
@@ -2007,6 +2024,11 @@
     function getLobbyTop3(dateKey, lobbyId) {
       return results
         .filter(item => item.date === dateKey && item.lobbyId === lobbyId)
+        .map(item => ({
+          ...item,
+          rank: Number(item.rank) || 0,
+          points: Number(item.points) || 0
+        }))
         .sort((a, b) => a.rank - b.rank)
         .slice(0, 3);
     }
@@ -2015,8 +2037,8 @@
       const select = document.getElementById("tournamentDateSelect");
       const dates = [...new Set(schedules.map(item => item.date))].sort();
 
-      if (dates.length === 0) {
-        select.innerHTML = '<option>Không có lịch</option>';
+      if (!dates.length) {
+        select.innerHTML = "<option>Không có lịch</option>";
         select.disabled = true;
         return;
       }
@@ -2027,9 +2049,9 @@
 
       selectedDate = dates.includes(todayKey) ? todayKey : dates[0];
 
-      select.innerHTML = dates
-        .map(date => `<option value="${date}" ${date === selectedDate ? "selected" : ""}>${formatDateVN(date)}</option>`)
-        .join("");
+      select.innerHTML = dates.map(date =>
+        `<option value="${date}" ${date === selectedDate ? "selected" : ""}>${formatDateVN(date)}</option>`
+      ).join("");
 
       select.addEventListener("change", () => {
         selectedDate = select.value;
@@ -2040,15 +2062,13 @@
     function renderHeroChips() {
       const chips = document.getElementById("heroChips");
       const daySchedules = getSchedulesForDate(selectedDate);
-
-      const timeChips = daySchedules
-        .map(session => `<span>${session.time || session.lobbyId}</span>`)
-        .join("");
-
-      const totalMatches = daySchedules.reduce((sum, session) => sum + getLobbyGames(session).length, 0);
+      const totalMatches = daySchedules.reduce(
+        (sum, session) => sum + getLobbyGames(session).length,
+        0
+      );
 
       chips.innerHTML = `
-        ${timeChips}
+        ${daySchedules.map(session => `<span>${session.time || session.lobbyId}</span>`).join("")}
         <span>${daySchedules.length} lobby</span>
         <span>${totalMatches} trận / ngày</span>
       `;
@@ -2061,7 +2081,7 @@
       document.getElementById("scheduleTitle").textContent =
         `Lịch thi đấu • ${formatDateVN(selectedDate)}`;
 
-      if (daySchedules.length === 0) {
+      if (!daySchedules.length) {
         matchList.innerHTML = '<div class="honor-empty">Chưa có lịch thi đấu cho ngày này.</div>';
         return;
       }
@@ -2088,16 +2108,15 @@
             <div class="session-team-title">Đội tham gia lobby</div>
 
             <div class="session-team-grid">
-              ${
-                sessionTeams.length
-                  ? sessionTeams.map((team, index) => `
-                      <div class="session-team">
-                        <span class="session-team-number">${String(index + 1).padStart(2, "0")}</span>
-                        <div class="team-logo">${team.shortName}</div>
-                        <strong>${team.name}</strong>
-                      </div>
-                    `).join("")
-                  : '<div class="honor-empty">Chưa nhập danh sách đội trong sheet LobbyTeams.</div>'
+              ${sessionTeams.length
+                ? sessionTeams.map((team, index) => `
+                    <div class="session-team">
+                      <span class="session-team-number">${String(index + 1).padStart(2, "0")}</span>
+                      <div class="team-logo">${team.shortName}</div>
+                      <strong>${team.name}</strong>
+                    </div>
+                  `).join("")
+                : '<div class="honor-empty">Chưa có danh sách đội.</div>'
               }
             </div>
 
@@ -2125,7 +2144,7 @@
       document.getElementById("honorsTitle").textContent =
         `Vinh danh • ${formatDateVN(selectedDate)}`;
 
-      if (daySchedules.length === 0) {
+      if (!daySchedules.length) {
         grid.innerHTML = '<div class="honor-empty">Chưa có lobby cho ngày này.</div>';
         return;
       }
@@ -2137,10 +2156,8 @@
         const accent = lobbyPalette[sessionIndex % lobbyPalette.length];
 
         return `
-          <article
-            class="honor-lobby-card"
-            style="--lobby-accent:${accent}; --lobby-accent-border:${accent}88;"
-          >
+          <article class="honor-lobby-card"
+                   style="--lobby-accent:${accent}; --lobby-accent-border:${accent}88;">
             <div class="honor-lobby-header">
               <div>
                 <div class="honor-lobby-title">
@@ -2153,37 +2170,33 @@
               <span class="honor-team-count">${sessionTeams.length} ĐỘI</span>
             </div>
 
-            ${
-              top3.length
-                ? `
-                  <div class="honor-ranking">
-                    ${top3.map((result, index) => {
-                      const team = getTeam(result.teamId);
+            ${top3.length ? `
+              <div class="honor-ranking">
+                ${top3.map((result, index) => {
+                  const team = getTeam(result.teamId);
 
-                      return `
-                        <div class="honor-row">
-                          <div class="honor-rank honor-rank-${index + 1}">
-                            ${index === 0 ? '<span class="rank-crown">♛</span>' : ""}
-                            <span class="rank-number">${result.rank}</span>
-                            <span class="rank-label">TOP ${result.rank}</span>
-                          </div>
+                  return `
+                    <div class="honor-row">
+                      <div class="honor-rank honor-rank-${index + 1}">
+                        ${index === 0 ? '<span class="rank-crown">♛</span>' : ""}
+                        <span class="rank-number">${result.rank}</span>
+                        <span class="rank-label">TOP ${result.rank}</span>
+                      </div>
 
-                          <div class="honor-team">
-                            <div class="team-logo">${team.shortName}</div>
-                            <span class="honor-team-name">${team.name}</span>
-                          </div>
+                      <div class="honor-team">
+                        <div class="team-logo">${team.shortName}</div>
+                        <span class="honor-team-name">${team.name}</span>
+                      </div>
 
-                          <div class="honor-score">
-                            <strong class="honor-points">${result.points}</strong>
-                            <small>Điểm</small>
-                          </div>
-                        </div>
-                      `;
-                    }).join("")}
-                  </div>
-                `
-                : `<div class="honor-empty">Lobby này chưa có kết quả Top 3.</div>`
-            }
+                      <div class="honor-score">
+                        <strong class="honor-points">${result.points}</strong>
+                        <small>Điểm</small>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            ` : '<div class="honor-empty">Lobby này chưa có kết quả Top 3.</div>'}
           </article>
         `;
       }).join("");
@@ -2195,121 +2208,52 @@
       renderMatches();
     }
 
-    async function loadWorkbookFromArrayBuffer(buffer) {
-      const workbook = XLSX.read(buffer, {
-        type: "array",
-        cellDates: true
-      });
-
-      parseWorkbook(workbook);
-
-      if (schedules.length === 0) {
-        throw new Error("Sheet Schedule chưa có dữ liệu.");
-      }
-
-      renderDateSelector();
-      renderAll();
-
-      const status = document.getElementById("dataStatus");
-      status.textContent =
-        `Đã tải dữ liệu • ${teams.length} đội • ${schedules.length} lobby`;
-      status.className = "data-status data-status-ok";
-
-      document.getElementById("localExcelFallback").hidden = true;
-    }
-
-    async function loadExcelFromFile(file) {
+    function loadTournamentData() {
       const status = document.getElementById("dataStatus");
 
       try {
-        status.textContent = `Đang đọc ${file.name}...`;
-        status.className = "data-status";
+        normalizeTournamentData();
 
-        const buffer = await file.arrayBuffer();
-        await loadWorkbookFromArrayBuffer(buffer);
+        if (!schedules.length) {
+          throw new Error("Chưa có dữ liệu schedule.");
+        }
+
+        renderDateSelector();
+        renderAll();
 
         status.textContent =
-          `Đã đọc ${file.name} • ${teams.length} đội • ${schedules.length} lobby`;
+          `Đã tải dữ liệu • ${teams.length} đội • ${schedules.length} lobby`;
+        status.className = "data-status data-status-ok";
       } catch (error) {
         console.error(error);
-
         status.innerHTML = `
-          <strong>Không đọc được file Excel.</strong>
+          <strong>Không thể đọc dữ liệu giải đấu.</strong>
           <span>${error.message}</span>
         `;
         status.className = "data-status data-status-error";
-
-        document.getElementById("localExcelFallback").hidden = false;
       }
     }
 
-    function setupLocalFileFallback() {
-      const input = document.getElementById("excelFileInput");
-
-      input.addEventListener("change", () => {
-        const file = input.files?.[0];
-        if (file) {
-          loadExcelFromFile(file);
-        }
-      });
-    }
-
-    async function loadTournamentExcel() {
-      const status = document.getElementById("dataStatus");
-      const fallback = document.getElementById("localExcelFallback");
-
-      setupLocalFileFallback();
-
-      if (typeof XLSX === "undefined") {
-        status.innerHTML = `
-          <strong>Không tải được thư viện SheetJS.</strong>
-          <span>Hãy kiểm tra kết nối Internet.</span>
-        `;
-        status.className = "data-status data-status-error";
-        return;
-      }
-
-      // file:// không được phép fetch file sibling theo chính sách bảo mật trình duyệt.
-      // Cho phép người dùng chọn Excel thủ công để vẫn chạy được khi double-click index.html.
-      if (window.location.protocol === "file:") {
-        status.innerHTML = `
-          <strong>Chế độ Local</strong>
-          <span>Chọn file DH_Tournament.xlsx để tải dữ liệu.</span>
-        `;
-        status.className = "data-status";
-        fallback.hidden = false;
-        return;
-      }
-
-      // GitHub Pages / localhost / web server: tự động đọc Excel cùng folder.
-      try {
-        const response = await fetch(EXCEL_FILE, {
-          cache: "no-store"
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const buffer = await response.arrayBuffer();
-        await loadWorkbookFromArrayBuffer(buffer);
-
-        status.textContent =
-          `Đã tải DH_Tournament.xlsx • ${teams.length} đội • ${schedules.length} lobby`;
-      } catch (error) {
-        console.error(error);
-
-        status.innerHTML = `
-          <strong>Không thể tự đọc DH_Tournament.xlsx.</strong>
-          <span>${error.message}</span>
-          <span>Bạn vẫn có thể chọn file Excel thủ công bên dưới.</span>
-        `;
-        status.className = "data-status data-status-error";
-        fallback.hidden = false;
-      }
-    }
-
-    loadTournamentExcel();
+    loadTournamentData();
 </script>
+
+  <script>
+    const DH_BRAND_LOGO_FILES = [
+      "icon.png", "icon.jpg", "icon.jpeg", "icon.webp",
+      "icon.gif", "icon.svg", "icon.bmp", "icon.avif"
+    ];
+    function tryNextBrandLogo(img) {
+      const nextIndex = Number(img.dataset.logoIndex || 0) + 1;
+      if (nextIndex < DH_BRAND_LOGO_FILES.length) {
+        img.dataset.logoIndex = String(nextIndex);
+        img.src = DH_BRAND_LOGO_FILES[nextIndex];
+      } else {
+        img.style.display = "none";
+        const fallback = document.getElementById("brandLogoFallback");
+        if (fallback) fallback.style.display = "grid";
+      }
+    }
+  </script>
+
 </body>
 </html>
