@@ -1671,7 +1671,7 @@
         <a href="#home">Trang chủ</a>
         <a href="#honors">Vinh danh</a>
         <a href="#schedule">Lịch đấu</a>
-        <a class="facebook-nav-btn" href="https://m.me/j/AbaYj-lqLDu-4X7w/?send_source=gc%3Acopy_invite_link_t" target="_blank" rel="noopener noreferrer">
+        <a class="facebook-nav-btn" href="#" data-facebook-link target="_blank" rel="noopener noreferrer">
           <span class="facebook-icon-small">f</span>
           Tham gia box Facebook
         </a>
@@ -1707,7 +1707,7 @@
           </div>
 
           <div class="hero-side">
-<a class="facebook-card" href="https://m.me/j/AbaYj-lqLDu-4X7w/?send_source=gc%3Acopy_invite_link_t" target="_blank" rel="noopener noreferrer">
+<a class="facebook-card" href="#" data-facebook-link target="_blank" rel="noopener noreferrer">
               <div class="facebook-card-top">
                 <div class="facebook-icon">f</div>
 
@@ -1769,6 +1769,15 @@
   <footer>
     © 2026 DH Esports • Free Fire Tournament
   </footer>
+
+  <script>
+    // ============================================================
+    // CẤU HÌNH WEBSITE
+    // Chỉ cần sửa link này nếu muốn đổi link đăng ký / box Facebook.
+    // ============================================================
+    const FACEBOOK_GROUP_LINK = "https://m.me/j/AbaYj-lqLDu-4X7w/";
+  </script>
+
   <script>
 /* ============================================================
    DH ESPORTS - TOURNAMENT DATA
@@ -2125,7 +2134,7 @@ window.DH_TOURNAMENT_DATA = {
               ${sessionTeams.length
                 ? sessionTeams.map((team, index) => team.id === "NO" ? `
                     <a class="session-team session-team-register"
-                       href="https://m.me/j/AbaYj-lqLDu-4X7w/?send_source=gc%3Acopy_invite_link_t"
+                       href="#" data-facebook-link
                        target="_blank"
                        rel="noopener noreferrer">
                       <span class="session-team-number">${String(index + 1).padStart(2, "0")}</span>
@@ -2276,6 +2285,13 @@ window.DH_TOURNAMENT_DATA = {
         if (fallback) fallback.style.display = "grid";
       }
     }
+  </script>
+
+
+  <script>
+    document.querySelectorAll("[data-facebook-link]").forEach(link => {
+      link.href = FACEBOOK_GROUP_LINK;
+    });
   </script>
 
 </body>
